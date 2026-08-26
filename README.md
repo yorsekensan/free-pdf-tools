@@ -1,14 +1,18 @@
 # free-pdf-tools
 
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![Architecture: 100% Client-Side](https://img.shields.io/badge/Architecture-100%25%20Client--Side-success)
+![No Tracking](https://img.shields.io/badge/Privacy-Zero%20Data%20Leaks-brightgreen)
+
 A completely free, browser-based PDF editor designed with absolute data privacy in mind. 
 
-Most free PDF editors require you to upload your sensitive documents to a third-party server, exposing you to data leaks and privacy breaches. **FREE-PDF-TOOLS** flips the model: the application runs entirely in your local web browser. Your files never leave your device.
+Most free PDF editors require you to upload your sensitive documents to a third-party server, exposing you to data leaks and privacy breaches. **free-pdf-tools** flips the model: the application runs entirely in your local web browser. Your files never leave your device.
 
 ## 🛡️ The "Zero Leak" Guarantee (Architecture)
-This application has **no backend server**. It leverages modern browser APIs and WebAssembly to process files in your device's local memory (RAM).
+This application has **no backend server**. It leverages modern browser APIs to process files in your device's local memory (RAM).
 * **Zero Uploads:** Documents are read locally via the `FileReader` API.
 * **Zero Storage:** Refreshing the page wipes the document from memory.
-* **Zero Costs:** Hosted statically, meaning no server fees, forever.
+* **Zero Costs:** Hosted statically on GitHub Pages, meaning no server fees, forever.
 
 ## 🚀 Feature Roadmap
 
@@ -20,13 +24,11 @@ Lightning-fast operations that modify the PDF binary structure directly.
 - [ ] **Split:** Extract specific pages or separate a PDF into multiple files.
 - [ ] **Rotate:** Rotate individual pages or the entire document.
 - [ ] **Delete Pages:** Remove unwanted pages effortlessly.
-- [ ] **Protect/Unlock:** Add or remove password encryption.
 
 ### Phase 2: Visual & Image Processing (Planned)
 Canvas-based operations for visual modifications.
 - [ ] Add Watermarks (Text/Image).
 - [ ] PDF to JPG / JPG to PDF conversion.
-- [ ] Add basic text annotations.
 
 ### Phase 3: Complex Conversion (Exploratory)
 - [ ] OCR (Optical Character Recognition) via client-side WebAssembly.
@@ -38,6 +40,17 @@ To keep the footprint lightweight and dependency-free, we use static frontend te
 * **PDF Manipulation:** [`pdf-lib`](https://pdf-lib.js.org/) for modifying PDF structures in memory.
 * **Hosting:** GitHub Pages.
 
-## 💻 Local Development
+## ☁️ 100% Online Development
 
-Since this is a 100% client-side application, getting started is incredibly simple. No databases or Node.js backends to configure.
+This project is built and maintained entirely in the cloud. You don't need to clone the repository or set up a local environment to contribute.
+
+1. **Edit in Browser:** Navigate to this repository on GitHub and press the `.` (period) key on your keyboard. This opens the lightweight GitHub Web Editor (VS Code in the browser).
+2. **Make Changes:** Write your HTML, JS, or CSS directly in the web editor.
+3. **Commit & Push:** Use the built-in source control tab to commit your changes directly to the `main` branch.
+4. **Auto-Deploy:** GitHub Pages will automatically detect the changes and deploy the latest version of the static site within minutes.
+
+## 🤝 Contributing
+Contributions, issues, and feature requests are welcome! Since our core philosophy is privacy and speed, any pull requests must strictly adhere to the client-side-only architecture rule. No external API calls for document processing will be accepted.
+
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
