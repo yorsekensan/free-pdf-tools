@@ -3,33 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YS-FREE-PDF | Secure PDF Merger</title>
-    <!-- Tailwind for styling -->
+    <title>YS-FREE-PDF | 100% Private PDF Tools</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- pdf-lib for client-side PDF manipulation -->
-    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col items-center justify-center p-6">
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen p-10">
 
-    <div class="max-w-xl w-full bg-white p-8 rounded-xl shadow-lg text-center">
-        <h1 class="text-3xl font-bold mb-2">YS-FREE-PDF</h1>
-        <p class="text-gray-500 mb-8">100% Private Client-Side Editor. Files never leave your device.</p>
-
-        <!-- File Upload -->
-        <div class="border-4 border-dashed border-gray-300 rounded-lg p-10 mb-6 bg-gray-50">
-            <input type="file" id="fileInput" accept="application/pdf" multiple class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
-            <p class="mt-2 text-sm text-gray-400">Select multiple PDFs to merge</p>
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold mb-4">YS-FREE-PDF Tools</h1>
+            <p class="text-gray-500">Every tool you need to use PDFs, at your fingertips. 100% Client-Side. Zero Data Leaks.</p>
         </div>
 
-        <!-- Action Button -->
-        <button id="mergeBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded transition opacity-50 cursor-not-allowed" disabled>
-            Merge PDFs
-        </button>
+        <!-- The Tool Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- Merge Tool Card -->
+            <a href="merge.html" class="block bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition border border-gray-200">
+                <div class="text-blue-600 text-3xl mb-3">📄+📄</div>
+                <h2 class="text-xl font-bold mb-2">Merge PDF</h2>
+                <p class="text-sm text-gray-500">Combine PDFs in the order you want with the easiest PDF merger available.</p>
+            </a>
 
-        <p id="statusText" class="mt-4 text-sm text-gray-600"></p>
+            <!-- Split Tool Card (Our next target) -->
+            <a href="split.html" class="block bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition border border-gray-200">
+                <div class="text-red-600 text-3xl mb-3">✂️📄</div>
+                <h2 class="text-xl font-bold mb-2">Split PDF</h2>
+                <p class="text-sm text-gray-500">Separate one page or a whole set for easy conversion into independent PDF files.</p>
+            </a>
+
+            <!-- Placeholder for future tools -->
+            <div class="block bg-gray-50 p-6 rounded-xl border border-gray-200 opacity-50">
+                <div class="text-gray-400 text-3xl mb-3">🔒</div>
+                <h2 class="text-xl font-bold mb-2">More coming soon...</h2>
+                <p class="text-sm text-gray-400">Architecting Phase 1 features step by step.</p>
+            </div>
+
+        </div>
     </div>
 
-    <!-- Link to our logic -->
-    <script src="js/app.js"></script>
 </body>
 </html>
