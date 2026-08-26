@@ -41,7 +41,3 @@ To keep the footprint lightweight and dependency-free, we use static frontend te
 ## 💻 Local Development
 
 Since this is a 100% client-side application, getting started is incredibly simple. No databases or Node.js backends to configure.
-
-1. Clone the repository:
-   ```bash
-   git clone [https://github.com/your-username/YS-FREE-PDF.git](https://github.com/your-username/YS-FREE-PDF.git)
