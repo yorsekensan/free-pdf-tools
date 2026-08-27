@@ -4,32 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YS-FREE-PDF | Secure PDF Merger</title>
-    <!-- Tailwind for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- pdf-lib for client-side PDF manipulation -->
     <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col items-center justify-center p-6">
 
     <div class="max-w-xl w-full bg-white p-8 rounded-xl shadow-lg text-center">
-        <h1 class="text-3xl font-bold mb-2">YS-FREE-PDF</h1>
-        <p class="text-gray-500 mb-8">100% Private Client-Side Editor. Files never leave your device.</p>
+        <div class="text-left mb-4">
+            <a href="index.html" class="text-blue-500 hover:underline text-sm">← Back to Dashboard</a>
+        </div>
+        
+        <h1 class="text-3xl font-bold mb-2">Merge PDF</h1>
+        <p class="text-gray-500 mb-8">Combine multiple PDFs into one. 100% locally.</p>
 
-        <!-- File Upload -->
-        <div class="border-4 border-dashed border-gray-300 rounded-lg p-10 mb-6 bg-gray-50">
-            <input type="file" id="fileInput" accept="application/pdf" multiple class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
-            <p class="mt-2 text-sm text-gray-400">Select multiple PDFs to merge</p>
+        <!-- Master Drop Zone -->
+        <div id="dropZone" class="border-4 border-dashed border-gray-300 rounded-lg p-10 mb-4 bg-gray-50 transition duration-200 ease-in-out cursor-pointer hover:bg-gray-100">
+            <div class="text-gray-400 text-4xl mb-3">📂</div>
+            <p class="text-gray-600 font-semibold">Drag and drop PDFs here</p>
+            <p class="text-gray-400 text-sm mt-1">or click to select files</p>
+            <!-- The actual input is hidden but triggered when the zone is clicked -->
+            <input type="file" id="fileInput" accept="application/pdf" multiple class="hidden"/>
         </div>
 
-        <!-- Action Button -->
-        <button id="mergeBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded transition opacity-50 cursor-not-allowed" disabled>
-            Merge PDFs
+        <!-- File Preview List -->
+        <ul id="fileList" class="text-left text-sm mb-6 space-y-2 hidden">
+            <!-- Dynamically populated by JS -->
+        </ul>
+
+        <!-- Action Button with Loading State -->
+        <button id="mergeBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded transition opacity-50 cursor-not-allowed flex items-center justify-center" disabled>
+            <svg id="loadingSpinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span id="btnText">Merge PDFs</span>
         </button>
 
         <p id="statusText" class="mt-4 text-sm text-gray-600"></p>
     </div>
 
-    <!-- Link to our logic -->
     <script src="js/merge.js"></script>
 </body>
 </html>
