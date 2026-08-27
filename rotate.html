@@ -3,38 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YS-FREE-PDF | Rotate PDF</title>
+    <title>YS-FREE-PDF | Enhanced Rotate PDF</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col items-center justify-center p-6">
 
-    <div class="max-w-xl w-full bg-white p-8 rounded-xl shadow-lg text-center">
+    <div class="max-w-4xl w-full bg-white p-8 rounded-xl shadow-lg text-center">
         <div class="text-left mb-4">
             <a href="index.html" class="text-blue-500 hover:underline text-sm">← Back to Dashboard</a>
         </div>
         
-        <h1 class="text-3xl font-bold mb-2">Rotate PDF</h1>
-        <p class="text-gray-500 mb-8">Fix orientation issues. Rotates all pages in the document.</p>
+        <h1 class="text-3xl font-bold mb-2">Enhanced Rotate PDF</h1>
+        <p class="text-gray-500 mb-8">Hover over a page to rotate it individually, then save.</p>
 
-        <!-- File Upload -->
-        <div class="border-4 border-dashed border-gray-300 rounded-lg p-10 mb-6 bg-gray-50">
-            <input type="file" id="fileInput" accept="application/pdf" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100"/>
+        <!-- Upload Zone -->
+        <div id="uploadZone" class="border-4 border-dashed border-gray-300 rounded-lg p-10 mb-6 bg-gray-50 cursor-pointer hover:bg-gray-100 transition">
+            <div class="text-gray-400 text-4xl mb-3">↻</div>
+            <p class="text-gray-600 font-semibold">Click or drag a PDF here to load thumbnails</p>
+            <input type="file" id="fileInput" accept="application/pdf" class="hidden"/>
         </div>
 
-        <!-- Rotation Selection -->
-        <div class="text-left mb-6">
-            <label class="block text-sm font-bold mb-1">Rotation Direction</label>
-            <select id="rotationSelect" class="w-full border rounded px-3 py-2 bg-white">
-                <option value="90">Right (90 Degrees)</option>
-                <option value="180">Upside Down (180 Degrees)</option>
-                <option value="270">Left (270 Degrees)</option>
-            </select>
+        <!-- Thumbnail Grid -->
+        <div id="thumbnailGrid" class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6 hidden">
+            <!-- Canvases injected here via JS -->
         </div>
 
         <!-- Action Button -->
-        <button id="rotateBtn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-4 rounded transition opacity-50 cursor-not-allowed" disabled>
-            Rotate & Download PDF
+        <button id="saveBtn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-4 rounded transition hidden" disabled>
+            Save Rotations & Download
         </button>
 
         <p id="statusText" class="mt-4 text-sm text-gray-600"></p>
