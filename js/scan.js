@@ -5,29 +5,23 @@ const cameraInput = document.getElementById('cameraInput');
 const galleryBtn = document.getElementById('galleryBtn');
 const galleryInput = document.getElementById('galleryInput');
 const fileList = document.getElementById('fileList');
+const ocrToggle = document.getElementById('ocrToggle');
 const buildBtn = document.getElementById('buildBtn');
 const btnText = document.getElementById('btnText');
-const loadingSpinner = document.getElementById('loadingSpinner');
 const statusText = document.getElementById('statusText');
 
 let selectedFiles = [];
 
-// --- Input Triggers ---
 cameraBtn.addEventListener('click', () => cameraInput.click());
 galleryBtn.addEventListener('click', () => galleryInput.click());
-
 cameraInput.addEventListener('change', (e) => handleFiles(e.target.files));
 galleryInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
-// --- UI Management ---
 function handleFiles(files) {
-    // Mobile cameras sometimes drop extensions; we assume valid image formats
     const validFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
     selectedFiles = [...selectedFiles, ...validFiles];
     renderFileList();
     checkValidity();
-    
-    // Reset inputs so the same file/photo can be triggered again if needed
     cameraInput.value = '';
     galleryInput.value = '';
 }
@@ -47,7 +41,7 @@ function renderFileList() {
             li.className = "flex justify-between items-center bg-gray-50 p-2 rounded border";
             li.innerHTML = `
                 <span class="truncate pr-4">Scan_${index + 1}.${file.type.split('/')[1] || 'jpg'}</span>
-                <button onclick="removeFile(${index})" class="text-red-500 hover:text-red-700 font-bold px-2">&times;</button>
+                <button onclick="removeFile(${index})" class="text-red-500 font-bold px-2">&times;</button>
             `;
             fileList.appendChild(li);
         });
@@ -60,69 +54,97 @@ function checkValidity() {
     if (selectedFiles.length > 0) {
         buildBtn.disabled = false;
         buildBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-        statusText.innerText = "";
     } else {
         buildBtn.disabled = true;
         buildBtn.classList.add('opacity-50', 'cursor-not-allowed');
     }
 }
 
-// --- PDF Generation ---
 buildBtn.addEventListener('click', async () => {
+    const useOCR = ocrToggle.checked;
+    
     try {
         buildBtn.disabled = true;
-        buildBtn.classList.add('opacity-75');
-        loadingSpinner.classList.remove('hidden');
         btnText.innerText = "Processing...";
-        statusText.innerText = "";
+        
+        const masterPdf = await PDFDocument.create();
 
-        const pdfDoc = await PDFDocument.create();
-
-        for (const file of selectedFiles) {
-            const imageBytes = await file.arrayBuffer();
-            let pdfImage;
+        if (useOCR) {
+            // --- PHASE 3: AI OCR PATH ---
+            statusText.innerText = "Initializing AI Engine (Fast Model)...";
             
-            // Note: Most mobile captures default to JPEG. If iOS captures in HEIC, 
-            // native Safari usually converts it to JPEG on upload when accept="image/*".
-            if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
-                pdfImage = await pdfDoc.embedJpg(imageBytes);
-            } else if (file.type === 'image/png') {
-                pdfImage = await pdfDoc.embedPng(imageBytes);
-            } else {
-                // Fallback attempt as JPG for unknown raw image types
-                try { pdfImage = await pdfDoc.embedJpg(imageBytes); } 
-                catch(e) { continue; } 
+            // Load the lightweight "fast" dataset
+            const worker = await Tesseract.createWorker("eng", 1, {
+                langPath: 'https://raw.githubusercontent.com/naptha/tessdata/gh-pages/4.0.0_fast',
+                logger: m => {
+                    if (m.status === 'recognizing text') {
+                        statusText.innerText = `Scanning Text: ${Math.round(m.progress * 100)}%`;
+                    }
+                }
+            });
+
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const file = selectedFiles[i];
+                statusText.innerText = `Processing page ${i + 1} of ${selectedFiles.length}...`;
+                
+                // 1. Tesseract reads the image and extracts text
+                await worker.recognize(file);
+                
+                // 2. Tesseract natively generates a PDF byte array with the invisible text overlay
+                const tesseractPdfBytes = await worker.getPDF('YS-Scanned-Doc');
+                
+                // 3. We load that raw byte array into pdf-lib
+                const tempPdf = await PDFDocument.load(tesseractPdfBytes);
+                
+                // 4. Copy the searchable page into our master document
+                const copiedPages = await masterPdf.copyPages(tempPdf, tempPdf.getPageIndices());
+                copiedPages.forEach(page => masterPdf.addPage(page));
             }
-            
-            const { width, height } = pdfImage.scale(1);
-            const page = pdfDoc.addPage([width, height]);
-            page.drawImage(pdfImage, { x: 0, y: 0, width, height });
+            await worker.terminate();
+
+        } else {
+            // --- PHASE 1: STANDARD IMAGE PATH (Flat PDF) ---
+            statusText.innerText = "Building flat PDF...";
+            for (const file of selectedFiles) {
+                const imageBytes = await file.arrayBuffer();
+                let pdfImage;
+                if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
+                    pdfImage = await masterPdf.embedJpg(imageBytes);
+                } else if (file.type === 'image/png') {
+                    pdfImage = await masterPdf.embedPng(imageBytes);
+                } else {
+                    try { pdfImage = await masterPdf.embedJpg(imageBytes); } catch(e) { continue; } 
+                }
+                
+                const { width, height } = pdfImage.scale(1);
+                const page = masterPdf.addPage([width, height]);
+                page.drawImage(pdfImage, { x: 0, y: 0, width, height });
+            }
         }
 
-        const pdfBytes = await pdfDoc.save();
+        // Export logic (same for both paths)
+        statusText.innerText = "Finalizing document...";
+        const pdfBytes = await masterPdf.save();
         const blob = new Blob([pdfBytes], { type: 'application/pdf' });
         const url = URL.createObjectURL(blob);
         
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'YS-Scanned-Document.pdf';
+        a.download = useOCR ? 'YS-Searchable-Scan.pdf' : 'YS-Flat-Scan.pdf';
         document.body.appendChild(a);
         a.click();
-        
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
-        statusText.innerText = "Success! Scanned document saved.";
-        statusText.className = "mt-4 text-sm text-teal-600";
+        statusText.innerText = "Success! Document saved.";
+        statusText.className = "mt-4 text-sm text-teal-600 font-bold";
         
     } catch (error) {
-        console.error("Build error:", error);
-        statusText.innerText = "An error occurred. Make sure your browser isn't blocking large image processing.";
+        console.error(error);
+        statusText.innerText = "An error occurred during processing.";
         statusText.className = "mt-4 text-sm text-red-600";
     } finally {
         buildBtn.disabled = false;
-        buildBtn.classList.remove('opacity-75');
-        loadingSpinner.classList.add('hidden');
         btnText.innerText = "Build PDF";
         selectedFiles = [];
         renderFileList();
