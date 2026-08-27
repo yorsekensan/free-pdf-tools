@@ -70,12 +70,14 @@ buildBtn.addEventListener('click', async () => {
         const masterPdf = await PDFDocument.create();
 
         if (useOCR) {
-            // --- PHASE 3: AI OCR PATH ---
+            // --- PHASE 3: AI OCR PATH (v5 Fixed) ---
             statusText.innerText = "Initializing AI Engine (Fast Model)...";
             
-            // Load the lightweight "fast" dataset
-            const worker = await Tesseract.createWorker("eng", 1, {
-                langPath: 'https://raw.githubusercontent.com/naptha/tessdata/gh-pages/4.0.0_fast',
+            // 1. Create worker using strict v5 syntax and reliable CDN paths
+            const worker = await Tesseract.createWorker('eng', 1, {
+                workerPath: 'https://unpkg.com/tesseract.js@v5.0.5/dist/worker.min.js',
+                langPath: 'https://tessdata.projectnaptha.com/4.0.0_fast',
+                corePath: 'https://unpkg.com/tesseract.js-core@v5.0.0/tesseract-core.wasm.js',
                 logger: m => {
                     if (m.status === 'recognizing text') {
                         statusText.innerText = `Scanning Text: ${Math.round(m.progress * 100)}%`;
@@ -87,19 +89,18 @@ buildBtn.addEventListener('click', async () => {
                 const file = selectedFiles[i];
                 statusText.innerText = `Processing page ${i + 1} of ${selectedFiles.length}...`;
                 
-                // 1. Tesseract reads the image and extracts text
-                await worker.recognize(file);
+                // 2. Request PDF output directly in the recognize options
+                const { data } = await worker.recognize(file, { pdfTitle: "YS-Scanned-Doc" }, { pdf: true });
                 
-                // 2. Tesseract natively generates a PDF byte array with the invisible text overlay
-                const tesseractPdfBytes = await worker.getPDF('YS-Scanned-Doc');
+                // 3. Tesseract returns data.pdf as an array of bytes. Load it directly into pdf-lib.
+                const tempPdf = await PDFDocument.load(data.pdf);
                 
-                // 3. We load that raw byte array into pdf-lib
-                const tempPdf = await PDFDocument.load(tesseractPdfBytes);
-                
-                // 4. Copy the searchable page into our master document
+                // 4. Extract the page with the invisible searchable text layer and add to master
                 const copiedPages = await masterPdf.copyPages(tempPdf, tempPdf.getPageIndices());
                 copiedPages.forEach(page => masterPdf.addPage(page));
             }
+            
+            // 5. Clean up the worker memory
             await worker.terminate();
 
         } else {
@@ -108,6 +109,7 @@ buildBtn.addEventListener('click', async () => {
             for (const file of selectedFiles) {
                 const imageBytes = await file.arrayBuffer();
                 let pdfImage;
+                
                 if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
                     pdfImage = await masterPdf.embedJpg(imageBytes);
                 } else if (file.type === 'image/png') {
@@ -122,7 +124,7 @@ buildBtn.addEventListener('click', async () => {
             }
         }
 
-        // Export logic (same for both paths)
+        // Export logic (Shared by both paths)
         statusText.innerText = "Finalizing document...";
         const pdfBytes = await masterPdf.save();
         const blob = new Blob([pdfBytes], { type: 'application/pdf' });
@@ -133,6 +135,7 @@ buildBtn.addEventListener('click', async () => {
         a.download = useOCR ? 'YS-Searchable-Scan.pdf' : 'YS-Flat-Scan.pdf';
         document.body.appendChild(a);
         a.click();
+        
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
@@ -140,8 +143,8 @@ buildBtn.addEventListener('click', async () => {
         statusText.className = "mt-4 text-sm text-teal-600 font-bold";
         
     } catch (error) {
-        console.error(error);
-        statusText.innerText = "An error occurred during processing.";
+        console.error("Scanner Error:", error);
+        statusText.innerText = "An error occurred. Check the console.";
         statusText.className = "mt-4 text-sm text-red-600";
     } finally {
         buildBtn.disabled = false;
