@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YS-FREE-PDF | Protect & Unlock</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col items-center justify-center p-6">
+
+    <div class="max-w-xl w-full bg-white p-8 rounded-xl shadow-lg text-center">
+        <div class="text-left mb-4">
+            <a href="index.html" class="text-blue-500 hover:underline text-sm">← Back to Dashboard</a>
+        </div>
+        
+        <h1 class="text-3xl font-bold mb-2">Protect & Unlock</h1>
+        <p class="text-gray-500 mb-8">Secure your files with AES-256 encryption or remove existing passwords locally.</p>
+
+        <!-- File Upload -->
+        <div class="border-4 border-dashed border-gray-300 rounded-lg p-10 mb-6 bg-gray-50 cursor-pointer hover:bg-gray-100 transition" id="uploadZone">
+            <div class="text-slate-400 text-4xl mb-3">🛡️</div>
+            <p class="text-gray-600 font-semibold">Select a PDF to inspect its security</p>
+            <input type="file" id="fileInput" accept="application/pdf" class="hidden"/>
+        </div>
+
+        <!-- LOCK Section (For unencrypted files) -->
+        <div id="lockSection" class="hidden text-left mb-6 p-4 bg-slate-50 border border-slate-200 rounded-lg">
+            <p class="text-green-600 font-bold mb-2">File is currently unlocked.</p>
+            <label class="block text-sm font-bold mb-1">Enter a new password to encrypt:</label>
+            <input type="password" id="newPassword" placeholder="Strong password" class="w-full border rounded px-3 py-2 mb-3">
+            <button id="lockBtn" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-4 rounded transition opacity-50 cursor-not-allowed" disabled>
+                Encrypt & Download
+            </button>
+        </div>
+
+        <!-- UNLOCK Section (For encrypted files) -->
+        <div id="unlockSection" class="hidden text-left mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p class="text-red-600 font-bold mb-2">File is locked.</p>
+            <label class="block text-sm font-bold mb-1">Enter the current password to decrypt:</label>
+            <input type="password" id="currentPassword" placeholder="Current password" class="w-full border border-red-300 rounded px-3 py-2 mb-3 focus:ring-red-500">
+            <button id="unlockBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded transition opacity-50 cursor-not-allowed" disabled>
+                Decrypt & Download
+            </button>
+        </div>
+
+        <p id="statusText" class="mt-4 text-sm text-gray-600"></p>
+    </div>
+
+    <script src="js/protect.js"></script>
+</body>
+</html>
